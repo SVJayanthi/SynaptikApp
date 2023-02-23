@@ -14,10 +14,10 @@ import matplotlib.pyplot as plt
 
 
 @blueprint.route('/index')
-@login_required
+# @login_required
 def index():
 
-    return render_template('home/index.html', segment='index')
+    return render_template('graphs/index.html', segment='index')
 
 
 @blueprint.route('/<template>')
@@ -59,12 +59,14 @@ def get_segment(request):
 
 
 
-@blueprint.route('/index')
-def index():
-    return render_template('index.html')
+# @blueprint.route('/index')
+# @login_required
+# def index():
+#     return render_template('index.html')
 
 
 @blueprint.route('/graph',  methods=['POST'])
+# @login_required
 def generate_graph():
     # url = requests.from['url']
     # response = requests.get(url)
@@ -80,8 +82,8 @@ def generate_graph():
     nx.draw_networkx_edges(graph, pos)
     nx.draw_networkx_labels(graph, pos, labels=nx.get_node_attributes(graph, 'label'))
     plt.axis('off')
-    plt.savefig('static/graph.png')
-    return render_template('graph.html')
+    plt.savefig('static/img/graph.png')
+    return render_template('graphs/graph.html')
 
   
 # app.run(host='0.0.0.0', port=81, debug=True)
