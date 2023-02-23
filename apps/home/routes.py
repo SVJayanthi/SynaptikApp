@@ -7,6 +7,10 @@ from apps.home import blueprint
 from flask import render_template, request
 from flask_login import login_required
 from jinja2 import TemplateNotFound
+import requests
+import json
+import networkx as nx
+import matplotlib.pyplot as plt
 
 
 @blueprint.route('/index')
@@ -52,3 +56,32 @@ def get_segment(request):
 
     except:
         return None
+
+
+
+@blueprint.route('/index')
+def index():
+    return render_template('index.html')
+
+
+@blueprint.route('/graph',  methods=['POST'])
+def generate_graph():
+    # url = requests.from['url']
+    # response = requests.get(url)
+    # data = json.loads(response.content)
+    graph = nx.wheel_graph(7)
+    # graph = nx.Graph()
+    # for node in data['nodes']:
+    #     graph.add_node(node['id'], label=node['label'])
+    # for edge in data['edges']:
+    #     graph.add_edge(edge['source'], edge['target'])
+    pos = nx.spring_layout(graph)
+    nx.draw_networkx_nodes(graph, pos)
+    nx.draw_networkx_edges(graph, pos)
+    nx.draw_networkx_labels(graph, pos, labels=nx.get_node_attributes(graph, 'label'))
+    plt.axis('off')
+    plt.savefig('static/graph.png')
+    return render_template('graph.html')
+
+  
+# app.run(host='0.0.0.0', port=81, debug=True)
