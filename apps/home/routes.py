@@ -82,7 +82,7 @@ def generate_graph():
     nx.draw_networkx_edges(graph, pos)
     nx.draw_networkx_labels(graph, pos, labels=nx.get_node_attributes(graph, 'label'))
     plt.axis('off')
-    plt.savefig('static/img/graph.png')
+    # plt.savefig('static/assets/img/graph.png')
     return render_template('graphs/graph.html')
 
   
