@@ -17,7 +17,14 @@ import matplotlib.pyplot as plt
 # @login_required
 def index():
 
-    return render_template('graphs/index.html', segment='index')
+    return render_template('home/index.html', segment='index')
+
+
+@blueprint.route('/graph_index')
+# @login_required
+def graph_index():
+
+    return render_template('graphs/index.html', segment='graph_index')
 
 
 @blueprint.route('/<template>')
