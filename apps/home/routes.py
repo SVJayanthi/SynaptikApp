@@ -7,12 +7,14 @@ from apps.home import blueprint
 from flask import render_template, request
 from flask_login import login_required
 from jinja2 import TemplateNotFound
-import requests
+from flask import request
 import json
 import networkx as nx
 import matplotlib.pyplot as plt
 import os
 import time
+
+plt.switch_backend('agg')
 
 
 @blueprint.route('/index')
@@ -77,11 +79,14 @@ def get_segment(request):
 @blueprint.route('/graph',  methods=['POST'])
 # @login_required
 def generate_graph():
-    # url = requests.form['url']
+    url = request.form['url']
     # response = requests.get(url)
     # data = json.loads(response.content)
+    data=int(url)
+
+    plt.clf()
     # var = request.form["samplename"]
-    graph = nx.wheel_graph(7)
+    graph = nx.wheel_graph(data)
     # graph = nx.Graph()
     # for node in data['nodes']:
     #     graph.add_node(node['id'], label=node['label'])
@@ -94,7 +99,6 @@ def generate_graph():
     plt.axis('off')
     # plt.savefig('static/assets/img/graph.png')
 
-    print(os.listdir())
     static = 'apps/static/'
     prefix = 'assets/img/graph/'
     new_graph_name = "graph_" + str(time.time()) + ".png"
