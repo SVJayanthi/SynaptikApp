@@ -11,6 +11,8 @@ import requests
 import json
 import networkx as nx
 import matplotlib.pyplot as plt
+import os
+import time
 
 
 @blueprint.route('/index')
@@ -75,9 +77,10 @@ def get_segment(request):
 @blueprint.route('/graph',  methods=['POST'])
 # @login_required
 def generate_graph():
-    # url = requests.from['url']
+    # url = requests.form['url']
     # response = requests.get(url)
     # data = json.loads(response.content)
+    # var = request.form["samplename"]
     graph = nx.wheel_graph(7)
     # graph = nx.Graph()
     # for node in data['nodes']:
@@ -90,7 +93,19 @@ def generate_graph():
     nx.draw_networkx_labels(graph, pos, labels=nx.get_node_attributes(graph, 'label'))
     plt.axis('off')
     # plt.savefig('static/assets/img/graph.png')
-    return render_template('graphs/graph.html')
+
+    print(os.listdir())
+    static = 'apps/static/'
+    prefix = 'assets/img/graph/'
+    new_graph_name = "graph_" + str(time.time()) + ".png"
+
+    for filename in os.listdir(static+prefix):
+        if filename.startswith('graph_'):  # not to remove other images
+            os.remove( static + prefix + filename)
+
+    plt.savefig(static+ prefix + new_graph_name)
+
+    return render_template('home/index.html', graph=prefix+new_graph_name)
 
   
 # app.run(host='0.0.0.0', port=81, debug=True)
