@@ -20,8 +20,9 @@ plt.switch_backend('agg')
 @blueprint.route('/index')
 # @login_required
 def index():
-
-    return render_template('home/index.html', segment='index')
+    prefix = 'assets/img/'
+    new_graph_name = "graph.png"
+    return render_template('home/index.html', graph=prefix+new_graph_name)
 
 
 @blueprint.route('/graph_index')
