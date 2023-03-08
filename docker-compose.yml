@@ -3,11 +3,13 @@ services:
   appseed-app:
     container_name: appseed_app
     restart: always
-    env_file: .env
+    env_file: .env.dev
     build: .
     networks:
       - db_network
       - web_network
+    depends_on:
+      - db
   nginx:
     container_name: nginx
     restart: always
@@ -20,9 +22,30 @@ services:
       - web_network
     depends_on: 
       - appseed-app
+  db:
+    image: postgres:13-alpine
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    environment:
+      - POSTGRES_USER=hello_flask
+      - POSTGRES_PASSWORD=hello_flask
+      - POSTGRES_DB=hello_flask_dev
 networks:
   db_network:
     driver: bridge
   web_network:
     driver: bridge
+
+volumes:
+  postgres_data:
+# db:
+#     image: mysql:5.7
+#     environment:
+#        MYSQL_DATABASE: 'appseed_db'
+#        MYSQL_USER: 'appseed_db_usr'
+#        MYSQL_PASSWORD: 'pass'
+#        MYSQL_ROOT_PASSWORD: '****'
+#     volumes:
+#       - /opt/slack_bot/mysql_data:/var/lib/mysql
+#       - /tmp/slack_bot/mysqld:/var/run/mysqld
  
