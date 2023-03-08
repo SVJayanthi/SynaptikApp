@@ -15,5 +15,6 @@ Flask-Minify==0.37
 requests
 networkx
 matplotlib
+mysqlclient
 
 # flask_mysqldb
