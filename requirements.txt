@@ -16,5 +16,6 @@ requests
 networkx
 matplotlib
 flask_mysqldb
+psycopg2-binary
 
 # flask_mysqldb

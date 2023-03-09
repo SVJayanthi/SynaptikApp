@@ -31,13 +31,16 @@ class ProductionConfig(Config):
 
     # PostgreSQL database
     SQLALCHEMY_DATABASE_URI = '{}://{}:{}@{}:{}/{}'.format(
-        os.getenv('DB_ENGINE'   , 'mysql'),
-        os.getenv('DB_USERNAME' , 'appseed_db_usr'),
-        os.getenv('DB_PASS'     , 'pass'),
-        os.getenv('DB_HOST'     , 'localhost'),
-        os.getenv('DB_PORT'     , 3306),
-        os.getenv('DB_NAME'     , 'appseed_db')
+        os.getenv('DB_ENGINE'   , 'postgresql'),
+        os.getenv('DB_USERNAME' , 'hello_flask'),
+        os.getenv('DB_PASS'     , 'hello_flask'),
+        os.getenv('DB_HOST'     , 'db'),
+        os.getenv('DB_PORT'     , 5432),
+        os.getenv('DB_NAME'     , 'hello_flask_prod')
     ) 
+
+    # Assets Management
+    ASSETS_ROOT = os.getenv('ASSETS_ROOT', '/static/assets') 
 
 class DebugConfig(Config):
     DEBUG = True

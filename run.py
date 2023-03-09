@@ -25,6 +25,31 @@ try:
 except KeyError:
     exit('Error: Invalid <config_mode>. Expected values [Debug, Production] ')
 
+
+"""
+tableUsersUsers
+CREATE TABLE "Users" (
+	id INTEGER NOT NULL, 
+	username VARCHAR(64), 
+	email VARCHAR(64), 
+	password BLOB, 
+	PRIMARY KEY (id), 
+	UNIQUE (username), 
+	UNIQUE (email)
+"""
+class User(db.Model):
+    __tablename__ = "users"
+
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(64), unique=True, nullable=False)
+    email = db.Column(db.String(64), unique=True)
+    password = db.Column(db.String(64), nullable=False)
+
+    def __init__(self, username, password):
+        self.username = username
+        self.password = password
+
+
 app = create_app(app_config)
 Migrate(app, db)
 
