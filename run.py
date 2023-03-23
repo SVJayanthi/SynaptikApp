@@ -37,17 +37,17 @@ CREATE TABLE "Users" (
 	UNIQUE (username), 
 	UNIQUE (email)
 """
-class User(db.Model):
-    __tablename__ = "users"
+# class User(db.Model):
+#     __tablename__ = "users"
 
-    id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(64), unique=True, nullable=False)
-    email = db.Column(db.String(64), unique=True)
-    password = db.Column(db.String(64), nullable=False)
+#     id = db.Column(db.Integer, primary_key=True)
+#     username = db.Column(db.String(64), unique=True, nullable=False)
+#     email = db.Column(db.String(64), unique=True)
+#     password = db.Column(db.String(64), nullable=False)
 
-    def __init__(self, username, password):
-        self.username = username
-        self.password = password
+#     def __init__(self, username, password):
+#         self.username = username
+#         self.password = password
 
 
 app = create_app(app_config)
