@@ -17,5 +17,5 @@ networkx
 matplotlib
 flask_mysqldb
 psycopg2-binary
-
+pandas
 # flask_mysqldb

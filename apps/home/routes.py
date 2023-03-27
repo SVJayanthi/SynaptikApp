@@ -13,9 +13,7 @@ import networkx as nx
 import matplotlib.pyplot as plt
 import os
 import time
-import plotly.express as px
 import pandas as pd
-import plotly
 
 plt.switch_backend('agg')
 
@@ -23,18 +21,10 @@ plt.switch_backend('agg')
 @blueprint.route('/index')
 # @login_required
 def index():
-    prefix = 'assets/img/'
-    new_graph_name = "graph.png"
-
-    df = px.data.medals_wide()
-    fig1 = px.bar(df, x = "nation", y = ['gold', 'silver', 'bronze'], title = "Wide=FormInput")
-
-    graph1JSON = json.dumps(fig1, cls =plotly.utils.PlotlyJSONEncoder)
-
-    return render_template('home/test.html', title = "Home", graph1JSON = graph1JSON)
+    return render_template('landing/index.html', title = "Landing")
 
 
-@blueprint.route('/graph_index')
+@blueprint.route('/go')
 # @login_required
 def graph_index():
 
