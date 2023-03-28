@@ -23,6 +23,11 @@ plt.switch_backend('agg')
 def index():
     return render_template('landing/index.html', title = "Landing")
 
+@blueprint.route('/home')
+# @login_required
+def home():
+    return render_template('home/index.html', title = "Home")
+
 
 @blueprint.route('/go')
 # @login_required
