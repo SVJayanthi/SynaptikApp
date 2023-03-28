@@ -18,4 +18,5 @@ matplotlib
 flask_mysqldb
 psycopg2-binary
 pandas
+plotly
 # flask_mysqldb

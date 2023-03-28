@@ -11,9 +11,15 @@ from flask import request
 import json
 import networkx as nx
 import matplotlib.pyplot as plt
+import plotly.express as px
+import pandas as pd
+import plotly
 import os
 import time
 import pandas as pd
+from networkx.readwrite import json_graph
+import plotly.graph_objects as go
+
 
 plt.switch_backend('agg')
 
@@ -26,7 +32,14 @@ def index():
 @blueprint.route('/home')
 # @login_required
 def home():
-    return render_template('home/index.html', title = "Home")
+
+    df = px.data.medals_wide()
+    fig1 = px.bar(df, x = "nation", y = ['gold', 'silver', 'bronze'], title = "Wide=FormInput")
+
+    graph1JSON = json.dumps(fig1, cls = plotly.utils.PlotlyJSONEncoder)
+
+    return render_template('home/test.html', title = "Home", graph1JSON = graph1JSON)
+    # return render_template('home/test.html', title = "Home")
 
 
 @blueprint.route('/go')
@@ -74,47 +87,91 @@ def get_segment(request):
         return None
 
 
-
-# @blueprint.route('/index')
-# @login_required
-# def index():
-#     return render_template('index.html')
-
-
 @blueprint.route('/graph',  methods=['POST'])
 # @login_required
 def generate_graph():
     url = request.form['url']
-    # response = requests.get(url)
-    # data = json.loads(response.content)
+
     data=int(url)
+    G = nx.wheel_graph(data)
 
-    plt.clf()
-    # var = request.form["samplename"]
-    graph = nx.wheel_graph(data)
-    # graph = nx.Graph()
-    # for node in data['nodes']:
-    #     graph.add_node(node['id'], label=node['label'])
-    # for edge in data['edges']:
-    #     graph.add_edge(edge['source'], edge['target'])
-    pos = nx.spring_layout(graph)
-    nx.draw_networkx_nodes(graph, pos)
-    nx.draw_networkx_edges(graph, pos)
-    nx.draw_networkx_labels(graph, pos, labels=nx.get_node_attributes(graph, 'label'))
-    plt.axis('off')
-    # plt.savefig('static/assets/img/graph.png')
+    pos = nx.spring_layout(G)
+    for n1,n2,attr in G.edges(data=True):
+        print (n1,n2,attr)
 
-    static = 'apps/static/'
-    prefix = 'assets/img/graph/'
-    new_graph_name = "graph_" + str(time.time()) + ".png"
+    edge_x = []
+    edge_y = []
+    for edge in G.edges():
+        x0, y0 = pos[edge[0]]
+        x1, y1 = pos[edge[1]]
+        edge_x.append(x0)
+        edge_x.append(x1)
+        edge_x.append(None)
+        edge_y.append(y0)
+        edge_y.append(y1)
+        edge_y.append(None)
 
-    for filename in os.listdir(static+prefix):
-        if filename.startswith('graph_'):  # not to remove other images
-            os.remove( static + prefix + filename)
+    edge_trace = go.Scatter(
+        x=edge_x, y=edge_y,
+        line=dict(width=0.5, color='#888'),
+        hoverinfo='none',
+        mode='lines')
 
-    plt.savefig(static+ prefix + new_graph_name)
+    node_x = []
+    node_y = []
+    for node in G.nodes():
+        x, y = pos[node]
+        node_x.append(x)
+        node_y.append(y)
 
-    return render_template('home/index.html', graph=prefix+new_graph_name)
+    node_trace = go.Scatter(
+        x=node_x, y=node_y,
+        mode='markers',
+        hoverinfo='text',
+        marker=dict(
+            showscale=True,
+            colorscale='YlGnBu',
+            reversescale=True,
+            color=[],
+            size=10,
+            colorbar=dict(
+                thickness=15,
+                title='Node Connections',
+                xanchor='left',
+                titleside='right'
+            ),
+            line_width=2))
+
+    node_adjacencies = []
+    node_text = []
+    for node, adjacencies in enumerate(G.adjacency()):
+        node_adjacencies.append(len(adjacencies[1]))
+        node_text.append('# of connections: '+str(len(adjacencies[1])))
+
+    node_trace.marker.color = node_adjacencies
+    node_trace.text = node_text
+
+    fig = go.Figure(data=[edge_trace, node_trace],
+             layout=go.Layout(
+                titlefont_size=16,
+                showlegend=False,
+                hovermode='closest',
+                margin=dict(b=20,l=5,r=5,t=40),
+                annotations=[ dict(
+                    text="Node Graph Display",
+                    showarrow=False,
+                    xref="paper", yref="paper",
+                    x=0.005, y=-0.002 ) ],
+                xaxis=dict(showgrid=False, zeroline=False, showticklabels=False),
+                yaxis=dict(showgrid=False, zeroline=False, showticklabels=False))
+                )
+
+
+    graph1JSON = json.dumps(fig, cls = plotly.utils.PlotlyJSONEncoder)
+
+    return render_template('home/test.html', title = "Home", graph1JSON = graph1JSON)
+
+    # return render_template('home/index.html', graph=prefix+new_graph_name)
 
   
 # app.run(host='0.0.0.0', port=81, debug=True)
