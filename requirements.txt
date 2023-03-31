@@ -19,3 +19,6 @@ flask_mysqldb
 psycopg2-binary
 pandas
 # flask_mysqldb
+CityLearn==1.4.2
+# ipykernel
+tqdm
