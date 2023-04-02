@@ -8,18 +8,9 @@
             <div class="card-head-row">
                 <div class="card-title">Sensor Communication Graph</div>
                 <div class="card-tools">
-                    <a href="#" class="btn btn-info btn-border btn-round btn-sm mr-2">
-                        <span class="btn-label">
-                            <i class="fa fa-pencil"></i>
-                        </span>
-                        Modify Connections
-                    </a>
-                    <a href="#" class="btn btn-info btn-border btn-round btn-sm">
-                        <span class="btn-label">
-                            <i class="fa fa-cancel"></i>
-                        </span>
-                        Disable Communication 
-                    </a>
+                    <button onclick="disableCommunication(true)" class="btn btn-info btn-border btn-round btn-sm">Enable Communication</button>
+                    <button onclick="disableCommunication(false)" class="btn btn-info btn-border btn-round btn-sm">Disable Communication</button>
+
                 </div>
             </div>
         </div>
@@ -32,19 +23,20 @@
                 var graph1 = {{ graphJSON | safe}};
                 Plotly.plot("graph1", graph1.data, graph1.layout)
                 
-                // function refreshGraph() {
-                //     $.ajax({
-                //         url: '/update_data',
-                //         type: 'POST',
-                //         data: JSON.stringify({'graphJSON': graph1}),
-                //         contentType: 'application/json',
-                //         success: function(response) {
-                //             graphJSON = response.graphJSON;
-                //             Plotly.update('graph1', JSON.parse(graphJSON).data, JSON.parse(graphJSON).layout);
-                //         }
-                //     });
-                // }
-		        // setInterval(refreshGraph, 100);
+                function refreshGraph() {
+                    $.ajax({
+                        url: '/update_data',
+                        type: 'POST',
+                        data: JSON.stringify({'graphJSON': graph1}),
+                        contentType: 'application/json',
+                        success: function(response) {
+                            graphJSON = response.graphJSON;
+                            // console.log(graphJSON);
+                            Plotly.newPlot('graph1', JSON.parse(graphJSON).data, JSON.parse(graphJSON).layout);
+                        }
+                    });
+                }
+		        setInterval(refreshGraph, 100);
                 
 
                 // // Update the graph data when the button is clicked
@@ -82,17 +74,23 @@
             <!-- plotly CDN-->
             <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
             <script>
-                var myVar = ({{cost_chart | safe}});
-                Plotly.plot("graph2", myVar, {});
-            </script>
+                var graph2 = ({{costJSON | safe}});
+                Plotly.plot("graph2", graph2.data, graph2.layout)
 
-            <!-- <div class="card-body">
-                <img style="max-width: 100%; height: auto;" src="{{ url_for('static', filename=metric_chart) }}" />
-            </div> -->
-            <!-- <div class="chart-container" style="min-height: 375px">
-                <canvas id="statisticsChart"></canvas>
-            </div>
-            <div id="myChartLegend"></div> -->
+                function refreshGraph() {
+                    $.ajax({
+                        url: '/update_data',
+                        type: 'POST',
+                        data: JSON.stringify({'costJSON': graph2}),
+                        contentType: 'application/json',
+                        success: function(response) {
+                            costJSON = response.costJSON;
+                            Plotly.newPlot('graph2', JSON.parse(costJSON).data, JSON.parse(costJSON).layout);
+                        }
+                    });
+                }
+                setInterval(refreshGraph, 100);
+            </script>
         </div>
     </div>
 
@@ -135,7 +133,7 @@
     <div class="card">
         <div class="card-header">
             <div class="card-head-row">
-                <div class="card-title">Additional Performance Metric</div>
+                <div class="card-title">Additional Performance Metrics</div>
                 <div class="card-tools">
                     <a href="#" class="btn btn-info btn-border btn-round btn-sm mr-2">
                         <span class="btn-label">
@@ -152,8 +150,22 @@
             <!-- plotly CDN-->
             <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
             <script>
-                var myVar = ({{metric_chart |safe}});
-                Plotly.plot("graph3", myVar, {});
+                var graph3 = ({{metricsJSON | safe}});
+                Plotly.plot("graph3", graph3.data, graph3.layout)
+
+                function refreshGraph() {
+                    $.ajax({
+                        url: '/update_data',
+                        type: 'POST',
+                        data: JSON.stringify({'metricsJSON': graph3}),
+                        contentType: 'application/json',
+                        success: function(response) {
+                            metricsJSON = response.metricsJSON;
+                            Plotly.newPlot('graph3', JSON.parse(metricsJSON).data, JSON.parse(metricsJSON).layout);
+                        }
+                    });
+                }
+                setInterval(refreshGraph, 100);
             </script>
 
             <!-- <div class="card-body">

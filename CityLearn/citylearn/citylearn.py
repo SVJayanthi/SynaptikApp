@@ -13,6 +13,8 @@ from citylearn.data import DataSet, EnergySimulation, CarbonIntensity, Pricing, 
 from citylearn.reward_function import RewardFunction
 from citylearn.utilities import read_json
 from citylearn.rendering import get_background, RenderBuilding, get_plots
+import copy
+
 
 class CityLearnEnv(Environment, Env):
     def __init__(self, schema: Union[str, Path, Mapping[str, Any]], num_buildings=5, **kwargs):
@@ -467,6 +469,24 @@ class CityLearnEnv(Environment, Env):
         reward = self.reward_function.calculate()
         return reward
 
+    def get_rewards(self):
+        """Calculate agent(s) reward(s) using :attr:`reward_function`.
+
+        Returns
+        -------
+        reward: List[float]
+            Reward for current observations. If `central_agent` is True, `reward` is a list of length = 1 else, `reward` has same length as `buildings`.
+        """
+
+        self.reward_function.electricity_consumption = [self.__net_electricity_consumption[self.time_step]] if self.central_agent\
+            else [b.net_electricity_consumption[self.time_step] for b in self.buildings]
+        self.reward_function.carbon_emission = [self.__net_electricity_consumption_emission[self.time_step]] if self.central_agent\
+            else [b.net_electricity_consumption_emission[self.time_step] for b in self.buildings]
+        self.reward_function.electricity_price = [self.__net_electricity_consumption_price[self.time_step]] if self.central_agent\
+            else [b.net_electricity_consumption_price[self.time_step] for b in self.buildings]
+        # reward = self.reward_function.calculate()
+        return [self.reward_function.electricity_price, self.reward_function.carbon_emission, self.reward_function.electricity_consumption]
+
     def get_info(self) -> Mapping[Any, Any]:
         return {}
 
@@ -618,9 +638,9 @@ class CityLearnEnv(Environment, Env):
             rbuilding.draw_building(canvas, charge=charge, iot_index=self.iots[i])
 
         # time series data
-        net_electricity_consumption = self.net_electricity_consumption[-24:]
-        net_electricity_consumption_without_storage = self.net_electricity_consumption_without_storage[-24:]
-        net_electricity_consumption_without_storage_and_pv = self.net_electricity_consumption_without_storage_and_pv[-24:]
+        net_electricity_consumption = self.net_electricity_consumption
+        net_electricity_consumption_without_storage = self.net_electricity_consumption_without_storage
+        net_electricity_consumption_without_storage_and_pv = self.net_electricity_consumption_without_storage_and_pv
 
         # time series data y limits
         all_time_net_electricity_consumption_without_storage = np.sum([
@@ -842,7 +862,7 @@ class CityLearnEnv(Environment, Env):
                 continue
 
         while len(buildings) < num_buildings:
-            buildings += (building,)
+            buildings += (copy.deepcopy(building),)
         if len(buildings) > num_buildings:
             buildings = buildings[:num_buildings]
 
