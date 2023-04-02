@@ -6,7 +6,6 @@ Copyright (c) 2019 - present AppSeed.us
 import os
 
 class Config(object):
-
     basedir = os.path.abspath(os.path.dirname(__file__))
 
     # Set up the App SECRET_KEY
@@ -19,7 +18,8 @@ class Config(object):
     SQLALCHEMY_TRACK_MODIFICATIONS = False 
 
     # Assets Management
-    ASSETS_ROOT = os.getenv('ASSETS_ROOT', '/static/assets')    
+    ASSETS_ROOT = os.getenv('ASSETS_ROOT', 'apps/static/assets') 
+    APP_ROOT = os.getenv('APP_ROOT', 'apps') 
     
 class ProductionConfig(Config):
     DEBUG = False

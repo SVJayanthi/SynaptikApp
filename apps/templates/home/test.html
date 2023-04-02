@@ -1,31 +1,169 @@
 {% extends "home/index.html" %}
 
-{% block newContent %}
-    <div class = "row p-4">
-        <div class= "card m-auto" style="width: 90%;">
-            <div class="card-body">
-                <div id = "chart1"></div>
-                <!-- <p>
-                    Lorem Ipsum is simply dummy text of the printing and 
-                    typesetting industry. Lorem Ipsum has been the industry's 
-                    standard dummy text ever since the 1500s, when an unknown 
-                    printer took a galley of type and scrambled it to make a 
-                    type specimen book. It has survived not only five centuries, 
-                    but also the leap into electronic typesetting, remaining 
-                    essentially unchanged. It was popularised in the 1960s 
-                    with the release of Letraset sheets containing Lorem Ipsum 
-                    passages, and more recently with desktop publishing software 
-                    like Aldus PageMaker including versions of Lorem Ipsum.
-                </p> -->
+{% block graph %}
+
+    <div class="card full-height">
+
+        <div class="card-header">
+            <div class="card-head-row">
+                <div class="card-title">Sensor Communication Graph</div>
+                <div class="card-tools">
+                    <a href="#" class="btn btn-info btn-border btn-round btn-sm mr-2">
+                        <span class="btn-label">
+                            <i class="fa fa-pencil"></i>
+                        </span>
+                        Modify Connections
+                    </a>
+                    <a href="#" class="btn btn-info btn-border btn-round btn-sm">
+                        <span class="btn-label">
+                            <i class="fa fa-cancel"></i>
+                        </span>
+                        Disable Communication 
+                    </a>
+                </div>
             </div>
+        </div>
+
+        <div class="card-body">
+    
+            <div id="graph1"></div>
+            <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+            <script>
+                var graph1 = {{ graphJSON | safe}};
+                Plotly.plot("graph1", graph1.data, graph1.layout)
+                
+                // function refreshGraph() {
+                //     $.ajax({
+                //         url: '/update_data',
+                //         type: 'POST',
+                //         data: JSON.stringify({'graphJSON': graph1}),
+                //         contentType: 'application/json',
+                //         success: function(response) {
+                //             graphJSON = response.graphJSON;
+                //             Plotly.update('graph1', JSON.parse(graphJSON).data, JSON.parse(graphJSON).layout);
+                //         }
+                //     });
+                // }
+		        // setInterval(refreshGraph, 100);
+                
+
+                // // Update the graph data when the button is clicked
+                // $('#update-btn').click(function() {
+                    
+                // });
+            </script>
+        </div>
+    </div>
+
+
+{% endblock %}
+
+
+
+{% block cost_visualization %}
+    <div class="card">
+        <div class="card-header">
+            <div class="card-head-row">
+                <div class="card-title">Key Performance Indicator</div>
+                <div class="card-tools">
+                    <a href="#" class="btn btn-info btn-border btn-round btn-sm mr-2">
+                        <span class="btn-label">
+                            <i class="fa fa-pencil"></i>
+                        </span>
+                        Export
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="card-body">
+            <div id="graph2"></div>
+            
+            <!-- plotly CDN-->
+            <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+            <script>
+                var myVar = ({{cost_chart | safe}});
+                Plotly.plot("graph2", myVar, {});
+            </script>
+
+            <!-- <div class="card-body">
+                <img style="max-width: 100%; height: auto;" src="{{ url_for('static', filename=metric_chart) }}" />
+            </div> -->
+            <!-- <div class="chart-container" style="min-height: 375px">
+                <canvas id="statisticsChart"></canvas>
+            </div>
+            <div id="myChartLegend"></div> -->
+        </div>
+    </div>
+
+{% endblock %}
+
+
+{% block connected_grid %}
+
+    <div class="card full-height">
+        <div class="card-header">
+            <div class="card-head-row">
+                <div class="card-title">Edge Network</div>
+                <div class="card-tools">
+                    <a href="#" class="btn btn-info btn-border btn-round btn-sm mr-2">
+                        <span class="btn-label">
+                            <i class="fa fa-pencil"></i>
+                        </span>
+                        Configure Device
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card-body">
+            <img id="comm-image" style="max-width: 100%; height: auto;" src="{{ url_for('static', filename=comm_graph) }}" />
         </div>
     </div>
 
 
     <!--plotly CDN-->
-    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <!-- <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
     <script>
         var graph1 = {{ graph1JSON | safe}};
         Plotly.plot("chart1", graph1, {})
-    </script>
+    </script> -->
+{% endblock %}
+
+
+{% block usage_visualization %}
+    <div class="card">
+        <div class="card-header">
+            <div class="card-head-row">
+                <div class="card-title">Additional Performance Metric</div>
+                <div class="card-tools">
+                    <a href="#" class="btn btn-info btn-border btn-round btn-sm mr-2">
+                        <span class="btn-label">
+                            <i class="fa fa-pencil"></i>
+                        </span>
+                        Export
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            <div id="graph3"></div>
+            
+            <!-- plotly CDN-->
+            <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+            <script>
+                var myVar = ({{metric_chart |safe}});
+                Plotly.plot("graph3", myVar, {});
+            </script>
+
+            <!-- <div class="card-body">
+                <img style="max-width: 100%; height: auto;" src="{{ url_for('static', filename=metric_chart) }}" />
+            </div> -->
+            <!-- <div class="chart-container" style="min-height: 375px">
+                <canvas id="statisticsChart"></canvas>
+            </div>
+            <div id="myChartLegend"></div> -->
+        </div>
+    </div>
+
 {% endblock %}

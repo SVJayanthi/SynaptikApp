@@ -1,5 +1,7 @@
 import math
 import os
+import sys
+
 from PIL import Image, ImageDraw
 import numpy as np
 
@@ -7,8 +9,9 @@ def get_plots(values, limits):
     import matplotlib
     matplotlib.use('Agg')
     import matplotlib.pyplot as plt
+    plt.style.use('Solarize_Light2')
 
-    fig, axs = plt.subplots(nrows=3, sharex=True)
+    fig, axs = plt.subplots(nrows=3, sharex=True, facecolor="w")
     fig.set_size_inches((10, 10))
     fig.set_dpi(72)
 
@@ -57,7 +60,7 @@ class RenderBuilding:
         self.canvas_size = canvas_size
         
         self.building_radius = canvas_size//3 # Can change this for size
-        self.building_size = canvas_size//7 # Can change this for size
+        self.building_size = canvas_size//num_buildings # Can change this for size
         
         self.max_glow_size = self.building_size//2
         self.glow_scales = {0: 0.4, 1: 0.6, 2: 0.8, 3: 1}
@@ -68,15 +71,32 @@ class RenderBuilding:
         self.line_color = line_color
         
         self.angle = index*360//num_buildings
-        
-    def read_image(self, charge):
+
+    def get_concat_h(self, im1, im2):
+        dst = Image.new('RGB', (im1.width + im2.width, im1.height))
+        dst.paste(im1, (0, 0))
+        dst.paste(im2, (im1.width, 0))
+        return dst
+
+    def read_image(self, charge, iot_index):
         charge_quartile = int(min(charge*100//25, 3))
 #         assert charge_quartile in range(4)
         folder_path = os.path.dirname(__file__)
         im_name = f'assets/building-{self.building_type}-charge-{charge_quartile}.png'
         im_name = os.path.join(folder_path, im_name)
         img = Image.open(im_name)
-        img = img.resize((self.building_size, self.building_size))
+        d_img = img.crop((0, 80, 50, img.height))
+
+        iot_name = f'assets/iotsensors/iot{iot_index}.png'
+        iot_name = os.path.join(folder_path, iot_name)
+        iot_img = Image.open(iot_name)
+        iot_img.thumbnail((sys.maxsize, 129),Image.ANTIALIAS)
+        img = iot_img
+
+        img = self.get_concat_h(d_img, iot_img)
+
+        # img = new_img.resize((self.building_size, self.building_size))
+
 #         img = img.rotate(-self.angle) # Looks weird and has cropping issue
         return img
     
@@ -107,9 +127,9 @@ class RenderBuilding:
                       (center[1] + line_coords[1])//2 - glow_size//2
         canvas.paste(glow_image, glow_coords, mask=glow_image)
     
-    def draw_building(self, canvas, charge):
-        building_image = self.read_image(charge)
+    def draw_building(self, canvas, charge, iot_index):
+        building_image = self.read_image(charge, iot_index)
         coords = self.get_coords()
         offset = self.canvas_size//2 - self.building_size//2
         coords = coords[0] + offset, coords[1] + offset
-        canvas.paste(building_image, coords, mask=building_image)
+        canvas.paste(building_image, coords)

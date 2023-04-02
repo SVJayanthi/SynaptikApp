@@ -15,7 +15,7 @@ from citylearn.utilities import read_json
 from citylearn.rendering import get_background, RenderBuilding, get_plots
 
 class CityLearnEnv(Environment, Env):
-    def __init__(self, schema: Union[str, Path, Mapping[str, Any]], **kwargs):
+    def __init__(self, schema: Union[str, Path, Mapping[str, Any]], num_buildings=5, **kwargs):
         r"""Initialize `CityLearnEnv`.
 
         Parameters
@@ -30,10 +30,12 @@ class CityLearnEnv(Environment, Env):
             Other keyword arguments used to initialize super classes.
         """
 
+        self.rng = np.random.default_rng(seed=40)
+        self.iots = self.rng.integers(0, 4, size=num_buildings)
         self.schema = schema
         self.__rewards = None
         self.buildings, self.time_steps, self.seconds_per_time_step,\
-            self.reward_function, self.central_agent, self.shared_observations = self.__load()
+            self.reward_function, self.central_agent, self.shared_observations = self.__load(num_buildings)
         super().__init__(**kwargs)
 
     @property
@@ -559,7 +561,7 @@ class CityLearnEnv(Environment, Env):
             rbuilding.draw_line(canvas, draw_obj, 
                                 energy=energy, 
                                 color=color)
-            rbuilding.draw_building(canvas, charge=charge)
+            rbuilding.draw_building(canvas, charge=charge, iot_index=self.iots[i])
 
         # time series data
         net_electricity_consumption = self.net_electricity_consumption[-24:]
@@ -589,6 +591,60 @@ class CityLearnEnv(Environment, Env):
         graphic_image = np.asarray(canvas)
         
         return np.concatenate([graphic_image, plot_image], axis=1)
+
+    def render_comm(self):
+        """Only applies to the CityLearn Challenge 2022 setup."""
+
+        canvas, canvas_size, draw_obj, color = get_background()
+        num_buildings = len(self.buildings)
+
+        for i, b in enumerate(self.buildings):
+            # current time step net electricity consumption and battery state or charge data
+            net_electricity_consumption_obs_ix = b.active_observations.index('net_electricity_consumption')
+            energy = b.net_electricity_consumption[b.time_step]/(b.observation_space.high[net_electricity_consumption_obs_ix])
+            charge = b.electrical_storage.soc[b.time_step]/b.electrical_storage.capacity_history[b.time_step - 1]
+            energy = max(min(energy, 1.0), 0.0)
+            charge = max(min(charge, 1.0), 0.0)
+
+            # render
+            rbuilding = RenderBuilding(index=i,
+                                canvas_size=canvas_size,
+                                num_buildings=num_buildings,
+                                line_color=color)
+            rbuilding.draw_line(canvas, draw_obj,
+                                energy=energy,
+                                color=color)
+
+            rbuilding.draw_building(canvas, charge=charge, iot_index=self.iots[i])
+
+        # time series data
+        net_electricity_consumption = self.net_electricity_consumption[-24:]
+        net_electricity_consumption_without_storage = self.net_electricity_consumption_without_storage[-24:]
+        net_electricity_consumption_without_storage_and_pv = self.net_electricity_consumption_without_storage_and_pv[-24:]
+
+        # time series data y limits
+        all_time_net_electricity_consumption_without_storage = np.sum([
+            b.energy_simulation.non_shiftable_load - b.pv.get_generation(b.energy_simulation.solar_generation) for b in self.buildings
+        ],axis=0)
+        net_electricity_consumption_y_lim = (
+            min(all_time_net_electricity_consumption_without_storage - (self.buildings[0].electrical_storage.nominal_power)*len(self.buildings)),
+            max(all_time_net_electricity_consumption_without_storage + (self.buildings[0].electrical_storage.nominal_power)*len(self.buildings))
+        )
+        net_electricity_consumption_without_storage_y_lim = (
+            min(all_time_net_electricity_consumption_without_storage),
+            max(all_time_net_electricity_consumption_without_storage)
+        )
+        net_electricity_consumption_without_storage_and_pv_y_lim = (
+            0,
+            max(np.sum([b.energy_simulation.non_shiftable_load for b in self.buildings], axis=0))
+        )
+
+        values = [net_electricity_consumption, net_electricity_consumption_without_storage, net_electricity_consumption_without_storage_and_pv]
+        limits = [net_electricity_consumption_y_lim, net_electricity_consumption_without_storage_y_lim, net_electricity_consumption_without_storage_and_pv_y_lim]
+        plot_image = get_plots(values, limits)
+        graphic_image = np.asarray(canvas)
+
+        return graphic_image, values
     
     def evaluate(self):
         """Only applies to the CityLearn Challenge 2022 setup."""
@@ -673,7 +729,7 @@ class CityLearnEnv(Environment, Env):
         agent = agent_constructor(**agent_attributes)
         return agent
 
-    def __load(self) -> Tuple[List[Building], int, float, RewardFunction, bool, List[str]]:
+    def __load(self, num_buildings=5) -> Tuple[List[Building], int, float, RewardFunction, bool, List[str]]:
         """Return `CityLearnEnv` and `Controller` objects as defined by the `schema`.
         
         Returns
@@ -784,6 +840,11 @@ class CityLearnEnv(Environment, Env):
                 
             else:
                 continue
+
+        while len(buildings) < num_buildings:
+            buildings += (building,)
+        if len(buildings) > num_buildings:
+            buildings = buildings[:num_buildings]
 
         reward_function_type = self.schema['reward_function']['type']
         reward_function_attributes = self.schema['reward_function'].get('attributes',None)
