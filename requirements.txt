@@ -17,6 +17,9 @@ networkx
 matplotlib
 flask_mysqldb
 psycopg2-binary
+scikit-learn
+torch
+torchvision
 pandas
 plotly
 # flask_mysqldb
