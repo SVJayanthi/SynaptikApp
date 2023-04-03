@@ -56,7 +56,7 @@ def save_image(app_config, arr, name):
     # im = white_to_transparency(im)
 
     suffix = imgs_subdir + f'{name}.png'
-    save_dir = app_config['APP_ROOT'] + app_config['ASSETS_ROOT'] + suffix
+    save_dir = app_config['ASSETS_ROOT'] + suffix
     im.save(save_dir)
 
     return 'assets' + suffix
