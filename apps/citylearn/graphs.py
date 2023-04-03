@@ -118,8 +118,15 @@ def plotly_data_vis(data):
 
 
 def plotly_wheel_graph(data):
+
+    num_vertices = data
+
+    if not isinstance(data, int):
+        num_vertices = len(data)
+
+    print(num_vertices)
     
-    G = nx.complete_graph(data)
+    G = nx.complete_graph(num_vertices)
 
     pos = nx.spring_layout(G)
     for n1,n2,attr in G.edges(data=True):
@@ -170,9 +177,19 @@ def plotly_wheel_graph(data):
 
     node_adjacencies = []
     node_text = []
+    count = 0
     for node, adjacencies in enumerate(G.adjacency()):
+
+        name = "Starting Endpoint"
+        sensor_name = "Starting Sensor"
+
+        if not isinstance(data, int):
+            name = data[count][0]
+            sensor_name = data[count][1]
+
+        count += 1
         node_adjacencies.append(len(adjacencies[1]))
-        node_text.append('# of connections: '+str(len(adjacencies[1])))
+        node_text.append('# of connections:' + str(len(adjacencies[1])) + ', Name: ' + str(name) + ', Sensor: ' + str(sensor_name))
 
     node_trace.marker.color = node_adjacencies
     node_trace.text = node_text
@@ -199,7 +216,7 @@ def plotly_wheel_graph(data):
 
 
 def plotly_empty_graph(data):
-    
+
     G = nx.complete_graph(data)
 
     G.remove_edges_from(list(G.edges))
@@ -254,7 +271,7 @@ def plotly_empty_graph(data):
     node_text = []
     for node, adjacencies in enumerate(G.adjacency()):
         node_adjacencies.append(len(adjacencies[1]))
-        node_text.append('# of connections: '+str(len(adjacencies[1])))
+        node_text.append('# of connections: ' + str(len(adjacencies[1])))
 
     node_trace.marker.color = node_adjacencies
     node_trace.text = node_text

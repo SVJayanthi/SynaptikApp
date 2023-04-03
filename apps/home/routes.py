@@ -74,6 +74,8 @@ def home():
     comm_graph_dir = save_image(app_config, comm_graph, name="comm_graph")
     # metric_chart_dir = save_image(app_config, comm_graph, name="metric_chart")
 
+    graphJSON = plotly_wheel_graph(1)
+
     return render_template('home/test.html', title = "Home", graphJSON=graphJSON, comm_graph = comm_graph_dir, metricsJSON = metricsJSON, costJSON = costJSON)
     # return render_template('home/test.html', title = "Home")
 
@@ -232,7 +234,8 @@ def run_simulation():
         # start_background_process(app_config, steps=10000)
         efficient_simulation(app_config)
         return "Background routine started."
-    
+
+
 @blueprint.route('/update_data',  methods=['POST'])
 def update_data():
     app_config = current_app.config
@@ -293,28 +296,53 @@ def get_segment(request):
         return None
 
 def update_wheel_graph(app_config, url):
-    data = int(url)
-    global_dict['num_vertices'] = data
+    # data = len(url)
+    global_dict['num_vertices'] = len(url)
     if global_dict["communication"]:
-        graphJSON = plotly_wheel_graph(data)
+        graphJSON = plotly_wheel_graph(url)
     else:
-        graphJSON = plotly_empty_graph(data)
+        graphJSON = plotly_empty_graph(url)
     global_dict['graphJSON'] = graphJSON
+
+
+
+
+
+@blueprint.route('/your_flask_endpoint_url', methods=['POST'])
+def handle_post_request():
+    previous_inputs = request.get_json()
+    print(previous_inputs)
+    global_dict["num_vertices":len(previous_inputs)]
+    graphJSON = plotly_wheel_graph(global_dict['num_vertices'])
+    global_dict['graphJSON'] = graphJSON
+    return 'Received previous inputs!'
+
+
+
+
+
 
 @blueprint.route('/generate_graph',  methods=['POST'])
 def generate_graph():
     # print(request.data())
+
+    print("HERE")
+
     app_config = current_app.config
+
     if request.method == 'POST':
         # file = io.BytesIO(request.data())
 
-        json_data = json.loads(str(request.data, "utf-8") )
+        previous_inputs = request.get_json()
+
+
+        # json_data = json.loads(str(request.data, "utf-8") )
         # print(json_data)
 
         # json_dict = json.loads(request.data())
         # print(json_dict)
         
-        thread = Thread(target=update_wheel_graph,  args=(app_config, json_data["url"]))
+        thread = Thread(target=update_wheel_graph,  args=(app_config, previous_inputs))
         thread.start()
         return "Background routine started."
 

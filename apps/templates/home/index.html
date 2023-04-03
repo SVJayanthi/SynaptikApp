@@ -21,13 +21,20 @@
 						<!-- <form action="/simulation" method="POST" class="btn btn-white btn-border btn-round mr-2"> <input type="submit" value="Deploy Network Sim"></form> -->
 						<!-- <form action="/simulation" method="POST" class="btn btn-white btn-border btn-round mr-2"> <input type="submit" value="Deploy Network Sim"></form> -->
 						<a href="#" class="btn btn-secondary btn-round" onclick="showFunction()">Add Endpoint</a>
-						<div id="myDIV", style="display:none">
-							<form id="endpointForm">
-								<label for="url">Enter API URL:</label>
-								<input type="text" id="url" name="url" required>
-								<br><br>
-								<input type="submit" onclick="hideFunction(); addEndpoint()" value="Generate Graph">
-							</form>
+						<div id="myDIV", style="display: none; padding: 20px;">
+							<form id="myForm" style="border: 1px solid black; padding: 10px;">
+								<label for="input1">Input 1:</label>
+								<input type="text" id="input1" name="input1"><br><br>
+							  
+								<label for="input2">Input 2:</label>
+								<input type="text" id="input2" name="input2"><br><br>
+							  
+								<label for="input3">Image Input:</label>
+								<input type="file" id="input3" name="input3"><br><br>
+							  
+								<input type="button" value="Submit" onclick="addEndpoint()">
+								<button type="button" onclick="cancel()">Cancel</button>
+							</form>							
 						</div>
 					</div>
 				</div>
@@ -365,20 +372,97 @@
         }
 		
 		const form = document.getElementById('endpointForm');
-        function addEndpoint() {
-			var formData = new FormData(form);
 
-            var xhr = new XMLHttpRequest();
-            xhr.open("POST", "/generate_graph", true);
-            xhr.setRequestHeader('Content-Type', 'application/json');
-            xhr.onreadystatechange = function() {
-                if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
-                    document.getElementById("message").innerHTML = xhr.responseText;
-                }
-            };
-			// console.log(JSON.stringify(Object.fromEntries(formData.entries())));
-        	xhr.send(JSON.stringify(Object.fromEntries(formData.entries())));
-        }
+		const previousInputs = [];
+
+		function addEndpoint() {
+
+			const input1Value = document.getElementById('input1').value;
+			const input2Value = document.getElementById('input2').value;
+
+			document.getElementById("input1").value = "";
+			document.getElementById("input2").value = "";
+			document.getElementById
+			document.getElementById("myDIV").style.display = "none";
+
+			const inputArray = [input1Value, input2Value];
+			previousInputs.push(inputArray);
+
+			const xhr = new XMLHttpRequest();
+			const url = 'generate_graph';
+			const data = JSON.stringify(previousInputs);
+
+			xhr.open('POST', url, true);
+			xhr.setRequestHeader('Content-Type', 'application/json');
+			xhr.send(data);
+		}
+
+		// var oldInput1 = [];
+		// var oldInput2 = [];
+
+		// function addEndpoint() {
+		// 	var file = document.getElementById("imageInput").files[0];
+		// 	var a = document.createElement("a");
+		// 	a.href = URL.createObjectURL(file);
+		// 	a.download = file.name;
+		// 	document.body.appendChild(a);
+		// 	a.click();
+		// 	document.body.removeChild(a);
+		// 	oldInput1.push(document.getElementById("input1").value);
+		// 	oldInput2.push(document.getElementById("input2").value);
+		// 	var formData = new FormData();
+  
+		// 	for (var i = 0; i < oldInput1.length; i++) {
+		// 		formData.append("input1", oldInput1[i]);
+		// 	}
+			
+		// 	for (var j = 0; j < oldInput2.length; j++) {
+		// 		formData.append("input2", oldInput2[j]);
+		// 	}
+			
+		// 	console.log( oldInput1 );
+		// 	console.log( oldInput2 );
+
+		// 	formData.append("image", file);
+		// 	var xhr = new XMLHttpRequest();
+		// 	xhr.open("POST", "/generate_graph", true);
+		// 	xhr.onload = function() {
+		// 		if (xhr.status == 200) {
+		// 			var input1 = document.getElementById("input1").value;
+		// 			var input2 = document.getElementById("input2").value;
+					
+		// 			// var table = document.querySelector("table");
+		// 			// var row = table.insertRow(-1);
+		// 			// var cell1 = row.insertCell(0);
+		// 			// var cell2 = row.insertCell(1);
+		// 			// var cell3 = row.insertCell(2);
+		// 			// var cell4 = row.insertCell(3);
+					
+		// 			// cell1.innerHTML = input1;
+		// 			// cell2.innerHTML = input2;
+		// 			// cell4.innerHTML = "<img src='" + URL.createObjectURL(file) + "' width='100'>";
+
+		// 			document.getElementById("input1").value = "";
+		// 			document.getElementById("input2").value = "";
+		// 			document.getElementById("imageInput").value = "";
+					
+		// 			document.getElementById("myForm").style.display = "none";
+		// 		}
+		// 		else {
+		// 			console.log("Request failed: " + xhr.status);
+		// 		}
+		// 	};
+			
+		// 	// Send the request
+		// 	xhr.send(formData);
+		// }
+
+		function cancel() {
+			document.getElementById("input1").value = "";
+			document.getElementById("input2").value = "";
+			document.getElementById
+			document.getElementById("myDIV").style.display = "none";
+		}
 
 		function disableCommunication(val) {
             var xhr = new XMLHttpRequest();
