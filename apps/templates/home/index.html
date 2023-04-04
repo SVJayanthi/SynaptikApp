@@ -6,7 +6,43 @@
 {% block stylesheets %}{% endblock stylesheets %}
 
 {% block content %}
-			
+
+	<!-- include jQuery and Popper.js -->
+	<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+	<!-- include Bootstrap JavaScript files -->
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+	<!-- Bootstrap CSS -->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+	<!-- jQuery library -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+	<!-- Bootstrap JS -->
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+	<script type="text/javascript">
+		$(document).ready(function() {
+			// When the "Show dropdown" button is clicked
+			$('#show-dropdown').click(function() {
+				// Show the dropdown
+				$('.dropdown').show();
+			});
+	
+			// When an item is selected in the dropdown
+			$('.dropdown-menu img').click(function() {
+				// Get the src of the selected image
+				var imageSrc = $(this).attr('src');
+				// Set the src of the image to the selected image's src
+				$('#selected-image').attr('src', imageSrc);
+			});
+		});
+	</script>
+	<style type="text/css">
+		.dropdown-toggle.btn-success {
+			background-color: white;
+			color: black;
+		}
+	</style>
+
 	<div class="content">
 		<div class="panel-header bg-primary-gradient">
 			<div class="page-inner py-5">
@@ -29,10 +65,25 @@
 								<label for="input2">Sensor Type:</label>
 								<input type="text" id="input2" name="input2"><br><br>
 							  
-								<label for="input3">Image Input:</label>
-								<input type="file" id="input3" name="input3"><br><br>
-							  
-								<input type="button" value="Submit" onclick="addEndpoint()">
+								<!-- <label for="input3">Choose an IOT sensor:</label> -->
+								<div class="dropdown">
+									<button class="btn btn-success dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true">
+										Select your sensor
+									</button>
+						  
+									<ul class="dropdown-menu" aria-labelledby="dropdownMenuButton" onchange="displaySelectedImage()">
+										<li class="dropdown-item">
+											<img src= "https://www.foodengineeringmag.com/ext/resources/Issues/2017/05-May/0517FE-Temp01-EH-TM411.jpg?height=635&t=1493648273&width=1200" width="20" height="15"> Temperature Sensor</li>
+										<li class="dropdown-item">
+											<img src="https://www.ashcroft.com/wp-content/uploads/2020/09/G2_Deutsch_RU_C.jpg" width="20" height="15"> Pressure Sensor</li>
+										<li class="dropdown-item">
+											<img src="https://www.electronics-cooling.com/wp-content/uploads/2019/05/cmossensor.png" width="20" height="15"> Heat Sensor</li>
+										<li class="dropdown-item">
+											<img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcToHfbJjElLWcIhGTEaKq-kUEhAkOQVarp05Q&usqp=CAU" width="20" height="15"> Weather Sensor</li>
+									</ul>
+								</div>
+						  
+								<input type="button" id = "temp" value="Submit" onclick="addEndpoint()">
 								<button type="button" onclick="cancel()">Cancel</button>
 							</form>							
 						</div>
@@ -60,9 +111,10 @@
 
 				<div class="col-md-6">
 					
-
 					{% block cost_visualization %}
 					{% endblock %}
+
+
 					
 				</div>
 			</div>
@@ -214,6 +266,32 @@
 			</div>
 		</div>
 	</div>
+
+	<!-- <style>
+		/* Hide the text content of the options */
+		#input3 option {
+		  background-repeat: no-repeat;
+		  background-position: center left;
+		  padding-left: 20px;
+		}
+	  
+		/* Show the images as background images */
+		#input3 option[value="choice1"] {
+		  background-image: url('https://upload.wikimedia.org/wikipedia/commons/thumb/0/09/CCD_Image_sensor.jpg/300px-CCD_Image_sensor.jpg');
+		}
+	  
+		#input3 option[value="choice2"] {
+		  background-image: url('../../static/assets/img/iotsensors/iot1.png');
+		}
+	  
+		#input3 option[value="choice3"] {
+		  background-image: url('../../static/assets/img/iotsensors/iot2.png');
+		}
+	  
+		#input3 option[value="choice4"] {
+		  background-image: url('../../static/assets/img/iotsensors/iot3.png');
+		}
+	  </style> -->
 
 {% endblock content %}
 
