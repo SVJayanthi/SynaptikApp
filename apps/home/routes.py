@@ -26,9 +26,6 @@ import plotly.graph_objects as go
 
 import plotly.express as px
 from plotly.subplots import make_subplots
-from apscheduler.schedulers.background import BackgroundScheduler
-from apscheduler.triggers.interval import IntervalTrigger
-from pusher import Pusher
 
 import sys
 import io
@@ -57,13 +54,6 @@ from apps import global_dict
 
 plt.switch_backend('agg')
 
-# pusher = Pusher(
-#     app_id='1579219',
-#     key='1d8bb5ae0ba2f97b3cd0',
-#     secret='e4e16b8d44838a665c62',
-#     cluster='us2',
-#     ssl=True
-# )
 
 env = CityLearnEnv(schema=Constants.schema_path, num_buildings=1)
 env.reset()
@@ -270,8 +260,6 @@ def run_simulation():
 def update_data():
     update_dict = dict((k, global_dict[k]) for k in ['consPrice', 'netEmmisions', 'netConsumption']
            if k in global_dict)
-
-    # pusher.trigger("graphs", "data-updated", update_dict)
 
     # app_config = current_app.config
     # print(session)
