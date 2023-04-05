@@ -4,7 +4,7 @@
 			<!-- Logo Header -->
 			<div class="logo-header" data-background-color="dark2">
 				
-				<a href="index.html" class="logo">
+				<a href="home" class="logo">
 					<img src="/static/assets/img/logo.png" height=50 width=170 alt="navbar brand" class="navbar-brand">
 				</a>
 				<button class="navbar-toggler sidenav-toggler ml-auto" type="button" data-toggle="collapse" data-target="collapse" aria-expanded="false" aria-label="Toggle navigation">
@@ -24,7 +24,6 @@
 			<!-- Navbar Header -->
 			<nav class="navbar navbar-header navbar-expand-lg" data-background-color="dark">
 				
-				{% if current_user.is_authenticated %}
 				<div class="container-fluid">
 					<div class="collapse" id="search-nav">
 						<form class="navbar-left navbar-form nav-search mr-md-3">
@@ -60,7 +59,7 @@
 												<div class="notif-icon notif-primary"> <i class="fa fa-user-plus"></i> </div>
 												<div class="notif-content">
 													<span class="block">
-														New user registered
+														New user registered: SynaptikUser
 													</span>
 													<span class="time">5 minutes ago</span> 
 												</div>
@@ -69,27 +68,25 @@
 												<div class="notif-icon notif-success"> <i class="fa fa-comment"></i> </div>
 												<div class="notif-content">
 													<span class="block">
-														Rahmad commented on Admin
+														New Model Deployed 
 													</span>
 													<span class="time">12 minutes ago</span> 
 												</div>
 											</a>
 											<a href="#">
-												<div class="notif-img"> 
-													<img src="/static/assets/img/profile2.jpg" alt="Img Profile">
-												</div>
+												<div class="notif-icon notif-success"> <i class="fa fa-bell"></i> </div>
 												<div class="notif-content">
 													<span class="block">
-														Reza send messages to you
+														Usage Below Threshold: Thermal Storage
 													</span>
 													<span class="time">12 minutes ago</span> 
 												</div>
 											</a>
 											<a href="#">
-												<div class="notif-icon notif-danger"> <i class="fa fa-heart"></i> </div>
+												<div class="notif-icon notif-primary"> <i class="fa fa-search"></i> </div>
 												<div class="notif-content">
 													<span class="block">
-														Farrah liked Admin
+														Identified Optimization: HVAC 1
 													</span>
 													<span class="time">17 minutes ago</span> 
 												</div>
@@ -192,7 +189,6 @@
 						</li>
 					</ul>
 				</div>
-				{% endif %}
 
 			</nav>
 			<!-- End Navbar -->

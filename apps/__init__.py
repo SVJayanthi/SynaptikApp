@@ -8,10 +8,16 @@ from flask_login import LoginManager
 from flask_sqlalchemy import SQLAlchemy
 from importlib import import_module
 
+# Import Dash application
+from apps.dashboard import DashApp, DashApp1, DashApp2
+
+global_dict = {"communication": True, 'num_vertices': 1}
 
 db = SQLAlchemy()
 login_manager = LoginManager()
-
+dash_class = DashApp(global_dict)
+dash_class1 = DashApp1(global_dict)
+dash_class2 = DashApp2(global_dict)
 
 def register_extensions(app):
     db.init_app(app)
@@ -40,6 +46,10 @@ def create_app(config):
     app.config.from_object(config)
     # print(app.config)
     register_extensions(app)
+    app = dash_class.init_dashboard(app)
+    app = dash_class1.init_dashboard(app)
+    app = dash_class2.init_dashboard(app)
+
     register_blueprints(app)
     configure_database(app)
     return app

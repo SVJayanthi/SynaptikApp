@@ -20,6 +20,18 @@ from apps.authentication.util import verify_pass
 
 @blueprint.route('/')
 def route_default():
+    # else we can create the user
+    logout_user()
+    sample_user = {"username": "Synaptik User (You)",
+                   "password": "Synaptikpassword",
+                   "email": "Synaptik@example.com"}
+
+    user = Users(**sample_user)
+    exists = Users.query.filter_by(username=sample_user['username']).first()
+    if not exists:
+        db.session.add(user)
+        db.session.commit()
+    login_user(user)
     return redirect(url_for('home_blueprint.index'))
     # return redirect(url_for('home_blueprint.index'))
     # return redirect(url_for('authentication_blueprint.login'))

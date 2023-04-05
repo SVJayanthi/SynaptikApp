@@ -40,10 +40,10 @@ def plotly_data_vis(data):
     fig = px.line(df)
 
     fig.update_layout(
-        title="Factory Wide Energy Expenditures",
-        xaxis_title="Time (hours)",
-        yaxis_title="Cost ($)",
-        height=400,
+        title="<b>Factory Wide Energy Expenditures</b>",
+        xaxis_title="<b>Time (hours)</b>",
+        yaxis_title="<b>Cost ($)</b>",
+        height=450,
         margin=dict(l=80, r=20, t=50, b=60),
         # yaxis_title="Y Axis Title",
         legend_title="Cost",
@@ -56,8 +56,10 @@ def plotly_data_vis(data):
         ),
         font=dict(
             size=12,
-            color="Black"
+            color="White"
         ), 
+        paper_bgcolor='rgba(0,0,0,0)',
+        plot_bgcolor='rgba(0,0,0,0)',
     )
     
     fig.update_yaxes(automargin=True)
@@ -87,9 +89,9 @@ def plotly_data_vis(data):
 
     
     fig.update_layout(
-        title="Factory Wide Energy Consumption",
-        xaxis_title="Time (hours)",
-        yaxis_title="Electricity Comsumption (kwH)",
+        title="<b>Factory Wide Energy Consumption</b>",
+        xaxis_title="<b>Time (hours)</b>",
+        yaxis_title="<b>Electricity Comsumption (kwH)</b>",
         height=500,
         margin=dict(l=80, r=20, t=50, b=60),
         # yaxis_title="Y Axis Title",
@@ -103,8 +105,10 @@ def plotly_data_vis(data):
         ),
         font=dict(
             size=12,
-            color="Black"
+            color="White"
         ), 
+        paper_bgcolor='rgba(0,0,0,0)',
+        plot_bgcolor='rgba(0,0,0,0)',
     )
     
     fig.update_yaxes(automargin=True)
@@ -116,9 +120,7 @@ def plotly_data_vis(data):
     return costJSON1, metricsJSON
 
 
-
-def plotly_wheel_graph(data):
-
+def wheel_graph(data):
     num_vertices = data
 
     if not isinstance(data, int):
@@ -128,6 +130,16 @@ def plotly_wheel_graph(data):
     
     G = nx.complete_graph(num_vertices)
 
+    return G, G.edges(), data
+
+
+def plotly_wheel_graph(G, edges, data):
+    num_vertices = data
+
+    if not isinstance(data, int):
+        num_vertices = len(data)
+    G = nx.complete_graph(num_vertices)
+    # G.add_edges_from(edges)
     pos = nx.spring_layout(G)
     for n1,n2,attr in G.edges(data=True):
         print (n1,n2,attr)
@@ -201,7 +213,7 @@ def plotly_wheel_graph(data):
                 hovermode='closest',
                 margin=dict(b=20,l=5,r=5,t=40),
                 annotations=[ dict(
-                    text="Node Graph Display",
+                    # text="Node Graph Display",
                     showarrow=False,
                     xref="paper", yref="paper",
                     x=0.005, y=-0.002 ) ],
@@ -215,32 +227,12 @@ def plotly_wheel_graph(data):
   
 
 
-def plotly_empty_graph(data):
-
-    G = nx.complete_graph(data)
-
+def plotly_empty_graph(G, edges, data):
     G.remove_edges_from(list(G.edges))
     pos = nx.spring_layout(G)
     for n1,n2,attr in G.edges(data=True):
         print (n1,n2,attr)
 
-    edge_x = []
-    edge_y = []
-    for edge in G.edges():
-        x0, y0 = pos[edge[0]]
-        x1, y1 = pos[edge[1]]
-        edge_x.append(x0)
-        edge_x.append(x1)
-        edge_x.append(None)
-        edge_y.append(y0)
-        edge_y.append(y1)
-        edge_y.append(None)
-
-    edge_trace = go.Scatter(
-        x=edge_x, y=edge_y,
-        line=dict(width=0.5, color='#888'),
-        hoverinfo='none',
-        mode='lines')
 
     node_x = []
     node_y = []
@@ -276,14 +268,14 @@ def plotly_empty_graph(data):
     node_trace.marker.color = node_adjacencies
     node_trace.text = node_text
 
-    fig = go.Figure(data=[edge_trace, node_trace],
+    fig = go.Figure(data=[node_trace],
              layout=go.Layout(
                 titlefont_size=16,
                 showlegend=False,
                 hovermode='closest',
                 margin=dict(b=20,l=5,r=5,t=40),
                 annotations=[ dict(
-                    text="Node Graph Display",
+                    # text="Node Graph Display",
                     showarrow=False,
                     xref="paper", yref="paper",
                     x=0.005, y=-0.002 ) ],

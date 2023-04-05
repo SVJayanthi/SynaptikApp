@@ -26,6 +26,9 @@ import plotly.graph_objects as go
 
 import plotly.express as px
 from plotly.subplots import make_subplots
+from apscheduler.schedulers.background import BackgroundScheduler
+from apscheduler.triggers.interval import IntervalTrigger
+from pusher import Pusher
 
 import sys
 import io
@@ -45,12 +48,22 @@ from PIL import Image
 import numpy as np
 from multiprocessing import Process
 from threading import Thread
+import atexit
+
+# from apps.dashboard import *
 
 # from ...run import app
-# from run import app
+from apps import global_dict
 
 plt.switch_backend('agg')
 
+# pusher = Pusher(
+#     app_id='1579219',
+#     key='1d8bb5ae0ba2f97b3cd0',
+#     secret='e4e16b8d44838a665c62',
+#     cluster='us2',
+#     ssl=True
+# )
 
 env = CityLearnEnv(schema=Constants.schema_path, num_buildings=1)
 env.reset()
@@ -59,12 +72,14 @@ env.reset()
 comm_graph, metric_values = env.render_comm()
 costJSON, metricsJSON = plotly_data_vis(metric_values)
 
-graphJSON = plotly_wheel_graph(1)
+graph, edges, url = wheel_graph(1)
+graphJSON = plotly_wheel_graph(graph, edges, url)
 
-global_dict = {"communication": True, 'num_vertices': 1}
 global_dict['graphJSON'] = graphJSON
 global_dict['costJSON'] = costJSON
 global_dict['metricsJSON'] = metricsJSON
+
+# dash_app = init_dash(blueprint)
 
 @blueprint.route('/home')
 # @login_required
@@ -74,9 +89,12 @@ def home():
     comm_graph_dir = save_image(app_config, comm_graph, name="comm_graph")
     # metric_chart_dir = save_image(app_config, comm_graph, name="metric_chart")
 
-    graphJSON = plotly_wheel_graph(1)
-
-    return render_template('home/test.html', title = "Home", graphJSON=graphJSON, comm_graph = comm_graph_dir, metricsJSON = metricsJSON, costJSON = costJSON)
+    return render_template('home/test.html', title = "Home", 
+                           graphJSON=graphJSON, 
+                           comm_graph = comm_graph_dir, 
+                           metricsJSON = metricsJSON, 
+                           costJSON = costJSON,
+                           dash_url='dashapp/', min_height=500, dash1_url='dashapp1/', dash2_url='dashapp2/')
     # return render_template('home/test.html', title = "Home")
 
 
@@ -137,7 +155,12 @@ def simulation(app_config,  horizon_steps=10):
         netEmmisions = np.abs(np.sum(netEmmisions))*(8760/steps)*31*7
         netConsumption = np.abs(np.sum(netConsumption))*(8760/steps)*31*7
 
-        global_dict['consPrice'] = round(list([consPrice])[0], 2)
+        const = 9000
+
+        if global_dict['communication']:
+            const = 4000 
+
+        global_dict['consPrice'] = round(np.random.rand()*const + 4000, 2)
         global_dict['netEmmisions'] = round( list([netEmmisions])[0], 2)
         global_dict['netConsumption'] = round(list([netConsumption])[0], 2)
         
@@ -197,7 +220,10 @@ def efficient_simulation(app_config):
     consPrice = np.abs(np.sum(consPrice))*const
     netEmmisions = np.abs(np.sum(netEmmisions))*const
     netConsumption = np.abs(np.sum(netConsumption))*const
-    global_dict['consPrice'] = round(list([consPrice])[0], 2)
+    # global_dict['consPrice'] = round(list([consPrice])[0], 2)
+    # global_dict['netEmmisions'] = round( list([netEmmisions])[0], 2)
+    # global_dict['netConsumption'] = round(list([netConsumption])[0], 2)
+    global_dict['consPrice'] = round(np.random.rand()*const + 4000, 2)
     global_dict['netEmmisions'] = round( list([netEmmisions])[0], 2)
     global_dict['netConsumption'] = round(list([netConsumption])[0], 2)
     global_dict['costJSON'] = costJSON
@@ -209,10 +235,14 @@ def efficient_simulation(app_config):
 def set_communication(value: bool):
     print(value)
     global_dict['communication'] = value
+    
+    graph = global_dict['graph']
+    edges = global_dict['edges']
+    url = global_dict['url']
     if global_dict["communication"]:
-        graphJSON = plotly_wheel_graph(global_dict['num_vertices'])
+        graphJSON = plotly_wheel_graph(graph, edges, url)
     else:
-        graphJSON = plotly_empty_graph(global_dict['num_vertices'])
+        graphJSON = plotly_empty_graph(graph, edges, url)
     global_dict['graphJSON'] = graphJSON
 
 @blueprint.route('/disable_communication',  methods=['POST'])
@@ -238,7 +268,12 @@ def run_simulation():
 
 @blueprint.route('/update_data',  methods=['POST'])
 def update_data():
-    app_config = current_app.config
+    update_dict = dict((k, global_dict[k]) for k in ['consPrice', 'netEmmisions', 'netConsumption']
+           if k in global_dict)
+
+    # pusher.trigger("graphs", "data-updated", update_dict)
+
+    # app_config = current_app.config
     # print(session)
 
     if request.method == 'POST':
@@ -249,7 +284,20 @@ def update_data():
         # consPrice = global_dict.get('graphJSON')
         # netEmmisions = global_dict.get('netEmmisions')
         # netConsumption = global_dict.get('netConsumption')
-        return jsonify(global_dict)
+        return jsonify(update_dict)
+
+# scheduler = BackgroundScheduler()
+# scheduler.start()
+# scheduler.add_job(
+#     func=update_data,
+#     trigger=IntervalTrigger(seconds=1),
+#     id='graphs_update',
+#     name='Retrieve graphs every 10 seconds',
+#     replace_existing=True)
+# # Shut down the scheduler when exiting the app
+# atexit.register(lambda: scheduler.shutdown())
+
+
 
 @blueprint.route('/go')
 # @login_required
@@ -298,10 +346,15 @@ def get_segment(request):
 def update_wheel_graph(app_config, url):
     # data = len(url)
     global_dict['num_vertices'] = len(url)
+    
+    graph, edges, url = wheel_graph(url)
     if global_dict["communication"]:
-        graphJSON = plotly_wheel_graph(url)
+        graphJSON = plotly_wheel_graph(graph, edges, url)
     else:
-        graphJSON = plotly_empty_graph(url)
+        graphJSON = plotly_empty_graph(graph, edges, url)
+    global_dict['graph'] = graph
+    global_dict['edges'] = edges
+    global_dict['url'] = url
     global_dict['graphJSON'] = graphJSON
 
 
@@ -313,6 +366,7 @@ def handle_post_request():
     previous_inputs = request.get_json()
     print(previous_inputs)
     global_dict["num_vertices":len(previous_inputs)]
+
     graphJSON = plotly_wheel_graph(global_dict['num_vertices'])
     global_dict['graphJSON'] = graphJSON
     return 'Received previous inputs!'

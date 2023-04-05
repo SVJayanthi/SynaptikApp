@@ -25,4 +25,6 @@ plotly
 # flask_mysqldb
 CityLearn==1.4.2
 # ipykernel
+torch
 tqdm
+dash

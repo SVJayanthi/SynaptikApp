@@ -120,22 +120,7 @@
 			</div>
 			
 			<div class="row mt--2">
-				<div class="col-md-6">
-					<!-- <div class="card full-height">
-						<div class="card-body">
-							<div class="card-title">Graph</div>
-							
-      						<img src="{{ url_for('static', filename=graph) }}" />
-						</div>
-					</div> -->
-
-					{% block connected_grid %}
-					{% endblock %}
-
-				</div>
-
-
-				<div class="col-md-6">
+				<div class="col-md-12">
 					
 
 					{% block usage_visualization %}
@@ -582,7 +567,7 @@
                     });
                 }
 				
-		setInterval(refreshText, 100);
+		setInterval(refreshText, 5000);
 		// setInterval(refreshImage, 5000); // Refresh every 1 second
 	</script>
 	

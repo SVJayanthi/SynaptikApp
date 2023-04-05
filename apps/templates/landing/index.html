@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Solid Template</title>
+    <title>Synaptik Landing</title>
     <link href="https://fonts.googleapis.com/css?family=IBM+Plex+Sans:400,600" rel="stylesheet">
     <link rel="stylesheet" href="/static/assets/dist/css/style.css">
 	<script src="https://unpkg.com/animejs@3.0.1/lib/anime.min.js"></script>
@@ -33,23 +33,29 @@
 						<div class="hero-copy">
 	                        <h1 class="hero-title mt-0">Synaptik: AI-as-a-Service for Edge Networks</h1>                            
 	                        <p class="hero-paragraph">Decentralized E2E Orchestration using Self-Learned Communication
-                            <div class="hero-cta"><a class="button button-primary" href=home>Try it now</a><a class="button" href="#">Get in touch</a></div>
+                            <div class="hero-cta"><a class="button button-primary" href=home>Try it now</a><a class="button" href="mailto:synaptik@synaptikai.com?subject=Get in touch&body=Hello, I'm interested in learning more.">Get in touch</a></div>
                             </p>
 						</div>
 						<div class="hero-figure anime-element">
 							<svg class="placeholder" width="528" height="396" viewBox="0 0 528 396">
 								<rect width="528" height="396" style="fill:transparent;" />
 							</svg>
+                            
+                            
 							<div class="hero-figure-box hero-figure-box-01" data-rotation="45deg"></div>
 							<div class="hero-figure-box hero-figure-box-02" data-rotation="-45deg"></div>
 							<div class="hero-figure-box hero-figure-box-03" data-rotation="0deg"></div>
 							<div class="hero-figure-box hero-figure-box-04" data-rotation="-135deg"></div>
-							<div class="hero-figure-box hero-figure-box-05"></div>
-							<div class="hero-figure-box hero-figure-box-06"></div>
+
+							<!-- <div class="hero-figure-box hero-figure-box-06"></div> -->
 							<div class="hero-figure-box hero-figure-box-07"></div>
 							<div class="hero-figure-box hero-figure-box-08" data-rotation="-22deg"></div>
 							<div class="hero-figure-box hero-figure-box-09" data-rotation="-52deg"></div>
 							<div class="hero-figure-box hero-figure-box-10" data-rotation="-50deg"></div>
+                            <div class="hero-figure-box hero-figure-box-05">
+                                
+                                <img src="/static/assets/img/app2.png" alt="Feature 02" style="z-index:10;">
+                                </div>
 						</div>
                     </div>
                 </div>
@@ -124,9 +130,8 @@
                     <div class="pricing-inner section-inner">
                         <div class="pricing-header text-center">
                             <h2 class="section-title mt-0">Choose Your Plan</h2>
-                            <!-- <p class="section-paragraph mb-0">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut ad quis nostrud.</p> -->
-                            <div class="hero-cta"><a class="button button-primary" href=home>Try it now</a><a class="button" href="#">Get in touch</a></div>
                         </div>
+
 						<div class="pricing-tables-wrap">
                             <div class="pricing-table">
                                 <div class="pricing-table-inner is-revealing">
@@ -201,7 +206,7 @@
 					<div class="cta-inner section-inner">
 						<h3 class="section-title mt-0">Any Questions?</h3>
 						<div class="cta-cta">
-							<a class="button button-primary button-wide-mobile" href="#">Get in touch</a>
+							<a class="button button-primary button-wide-mobile" href="mailto:synaptik@synaptikai.com?subject=Get in touch&body=Hello, I'm interested in learning more.">Get in touch</a>
 						</div>
 					</div>
 				</div>
@@ -263,5 +268,100 @@
     </div>
 
     <script src="/static/assets/dist/js/main.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script>
+      $('#send-button').click(function(e) {
+        e.preventDefault();
+        var name = $('#name').val();
+        var email = $('#email').val();
+        var message = $('#message').val();
+        $.ajax({
+          type: 'POST',
+          url: '/contact',
+          data: {'name': name, 'email': email, 'message': message},
+          success: function() {
+            alert('Your message has been sent.');
+            $('#name').val('');
+            $('#email').val('');
+            $('#message').val('');
+          },
+          error: function() {
+            alert('There was an error sending your message.');
+          }
+        });
+      });
+
+      // Get the button and form elements
+        var contactBtn = document.getElementById('contact-btn');
+        var contactForm = document.getElementById('contact-form');
+        var closeBtn = document.getElementById('close-btn');
+
+        // Show the form when the button is clicked
+        contactBtn.addEventListener('click', function() {
+        contactForm.style.display = 'block';
+        });
+
+        // Hide the form when the close button is clicked
+        closeBtn.addEventListener('click', function() {
+        contactForm.style.display = 'none';
+        });
+
+        // Hide the form when the user clicks outside of it
+        window.addEventListener('click', function(event) {
+        if (event.target == contactForm) {
+            contactForm.style.display = 'none';
+        }
+        });
+    </script>
+    
+<style>
+    .contact-form {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 400px;
+      padding: 20px;
+      background-color: #fff;
+      box-shadow: 0px 0px 10px #888;
+      z-index: 999;
+      display: none;
+    }
+    
+    .contact-form h2 {
+      margin-top: 0;
+    }
+    
+    .contact-form input[type="text"],
+    .contact-form input[type="email"],
+    .contact-form textarea {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 10px;
+      border: none;
+      border-radius: 5px;
+      box-shadow: 0px 0px 5px #ccc;
+    }
+    
+    .contact-form input[type="submit"] {
+      background-color: #007bff;
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      padding: 10px 20px;
+      cursor: pointer;
+    }
+    
+    #close-btn {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      font-size: 30px;
+      background-color: transparent;
+      border: none;
+      cursor: pointer;
+    }
+    </style>
 </body>
 </html>
