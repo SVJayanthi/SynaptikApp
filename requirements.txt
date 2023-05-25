@@ -21,6 +21,7 @@ scikit-learn
 torch
 torchvision
 pandas
+turbo_flask
 plotly
 # flask_mysqldb
 CityLearn==1.4.2
