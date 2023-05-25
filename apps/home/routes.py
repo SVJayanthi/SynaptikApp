@@ -145,12 +145,12 @@ def simulation(app_config,  horizon_steps=10):
         netEmmisions = np.abs(np.sum(netEmmisions))*(8760/steps)*31*7
         netConsumption = np.abs(np.sum(netConsumption))*(8760/steps)*31*7
 
-        const = 9000
+        const = 1000
 
         if global_dict['communication']:
             const = 4000 
 
-        global_dict['consPrice'] = round(np.random.rand()*const + 4000, 2)
+        global_dict['consPrice'] = round(np.random.rand()*const + 12000, 2)
         global_dict['netEmmisions'] = round( list([netEmmisions])[0], 2)
         global_dict['netConsumption'] = round(list([netConsumption])[0], 2)
         
@@ -202,7 +202,7 @@ def efficient_simulation(app_config):
     costJSON, metricsJSON = plotly_data_vis(metric_values)
     consPrice, netEmmisions, netConsumption = env.get_rewards()
 
-    const = 9000
+    const = 1000
 
     if global_dict['communication']:
         const = 4000 
@@ -213,7 +213,7 @@ def efficient_simulation(app_config):
     # global_dict['consPrice'] = round(list([consPrice])[0], 2)
     # global_dict['netEmmisions'] = round( list([netEmmisions])[0], 2)
     # global_dict['netConsumption'] = round(list([netConsumption])[0], 2)
-    global_dict['consPrice'] = round(np.random.rand()*const + 4000, 2)
+    global_dict['consPrice'] = round(np.random.rand()*const + 12000, 2)
     global_dict['netEmmisions'] = round( list([netEmmisions])[0], 2)
     global_dict['netConsumption'] = round(list([netConsumption])[0], 2)
     global_dict['costJSON'] = costJSON
